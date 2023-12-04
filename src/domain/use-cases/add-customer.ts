@@ -1,4 +1,4 @@
-import { HashGenerator } from "../../data/cryptography/hash-generator"
+import { HashGenerator } from "../../data/protocols/cryptography/hash-generator"
 import { AddCustomerRepository } from "../../data/protocols/db/customer/add-customer-repository"
 
 export interface AddCustomer {
