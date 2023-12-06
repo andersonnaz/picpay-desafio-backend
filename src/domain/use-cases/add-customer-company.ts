@@ -1,5 +1,5 @@
 import { HashGenerator } from "../../data/protocols/cryptography/hash-generator"
-import { AddCustomerRepository } from "../../data/protocols/db/customer/add-customer-repository"
+import { AddCustomerCompanyRepository } from "../../data/protocols/db/customer-company/add-customer-company-repository"
 
 export interface AddCustomerCompany {
     add(customerData: AddCustomerCompany.Params): Promise<AddCustomerCompany.Result>
@@ -18,13 +18,12 @@ export namespace AddCustomerCompany {
         id: string
         name: string
         email: string
-        password: string
         cnpj: string
         accessToken: string
     } | undefined
 
     export type Dependencies = {
-        customerRepository: AddCustomerRepository
+        customerCompanyRepository: AddCustomerCompanyRepository
         hashService: HashGenerator
     }
 }
