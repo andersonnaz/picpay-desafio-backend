@@ -65,5 +65,12 @@ describe('DbAddCustomer use case', () => {
             await sut.add(params)
             expect(hashServiceSpy).toHaveBeenCalledWith({ value: params.password })
         });
+
+        test('should throw if hash method throws', async () => {
+            const { sut, hashServiceStub } = makeSut()
+            jest.spyOn(hashServiceStub, 'hash').mockRejectedValue(new Error())
+            const promise = sut.add(params)
+            await expect(promise).rejects.toThrow()
+        });
     })
 });
