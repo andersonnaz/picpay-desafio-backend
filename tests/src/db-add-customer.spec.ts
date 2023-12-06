@@ -89,5 +89,12 @@ describe('DbAddCustomer use case', () => {
                 accessToken: params.accessToken
             })
         });
+
+        test('should throw if add method throws', async () => {
+            const { sut, customerRepositoryStub } = makeSut()
+            jest.spyOn(customerRepositoryStub, 'add').mockRejectedValue(new Error())
+            const promise = sut.add(params)
+            await expect(promise).rejects.toThrow()
+        });
     })
 });
