@@ -10,9 +10,8 @@ const makeCustomerRepositoryStub = (): AddCustomerRepository => {
                 id: 'any_id',
                 name: 'any_name',
                 email: 'any_email@mail.com',
-                password: 'hashed_password',
                 cpf: 'any_cpf',
-                accessToken: 'any_accessToken'
+                accessToken: 'any_token'
             }))
         }
     }
@@ -95,6 +94,18 @@ describe('DbAddCustomer use case', () => {
             jest.spyOn(customerRepositoryStub, 'add').mockRejectedValue(new Error())
             const promise = sut.add(params)
             await expect(promise).rejects.toThrow()
+        });
+
+        test('should return a customer on success', async () => {
+            const { sut } = makeSut()
+            const result = await sut.add(params)
+            expect(result).toEqual({
+                id: expect.any(String),
+                name: params.name,
+                email: params.email,
+                cpf: params.cpf,
+                accessToken: params.accessToken
+            })
         });
     })
 });
