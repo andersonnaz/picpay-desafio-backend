@@ -3,44 +3,67 @@ import { AddCustomerRepository } from "../../src/data/protocols/db/customer/add-
 import { DbAddCustomer } from "../../src/data/use-cases/db-add-customer";
 import { AddCustomer } from "../../src/domain/use-cases/add-customer";
 
-describe('DbAddCustomer use case', () => {
-    describe('HashService', () => {
-        test('should call hash method with correct password', async () => {
-            class HashGeneratorStub implements HashGenerator {
-                hash(value: HashGenerator.Params): Promise<string> {
-                    return new Promise(resolve => resolve('hashed_password'))
-                }
-            }
-
-            class CustomerRepositoryStub implements AddCustomerRepository {
-                add(customer: AddCustomerRepository.Params): Promise<AddCustomerRepository.Result> {
-                    return new Promise(resolve => resolve({
-                        id: 'any_id',
-                        name: 'any_name',
-                        email: 'any_email@mail.com',
-                        password: 'hashed_password',
-                        cpf: 'any_cpf'
-                    }))
-                }
-            }
-
-            const hashServiceStub = new HashGeneratorStub()
-            const customerRepositoryStub = new CustomerRepositoryStub()
-            const dependencies: AddCustomer.Dependencies = {
-                hashService: hashServiceStub,
-                customerRepository: customerRepositoryStub
-            }
-            const sut = new DbAddCustomer(dependencies)
-
-            const hashServiceSpy = jest.spyOn(hashServiceStub, 'hash')
-            await sut.add({
+const makeCustomerRepositoryStub = (): AddCustomerRepository => {
+    class CustomerRepositoryStub implements AddCustomerRepository {
+        add(customer: AddCustomerRepository.Params): Promise<AddCustomerRepository.Result> {
+            return new Promise(resolve => resolve({
+                id: 'any_id',
                 name: 'any_name',
                 email: 'any_email@mail.com',
-                password: 'any_password',
-                cpf: 'any_cpf',
-                accessToken: 'any_token'
-            })
-            expect(hashServiceSpy).toHaveBeenCalledWith({ value: 'any_password' })
+                password: 'hashed_password',
+                cpf: 'any_cpf'
+            }))
+        }
+    }
+
+    return new CustomerRepositoryStub()
+}
+
+const makeHashGeneratorStub = (): HashGenerator => {
+    class HashGeneratorStub implements HashGenerator {
+        hash(value: HashGenerator.Params): Promise<string> {
+            return new Promise(resolve => resolve('hashed_password'))
+        }
+    }
+    return new HashGeneratorStub()
+}
+
+type SutTypes = {
+    sut: DbAddCustomer
+    hashServiceStub: HashGenerator
+    customerRepositoryStub: AddCustomerRepository
+}
+
+const makeSut = (): SutTypes => {
+    const hashServiceStub = makeHashGeneratorStub()
+    const customerRepositoryStub = makeCustomerRepositoryStub()
+    const dependencies: AddCustomer.Dependencies = {
+        hashService: hashServiceStub,
+        customerRepository: customerRepositoryStub
+    }
+    const sut = new DbAddCustomer(dependencies)
+    return {
+        sut,
+        hashServiceStub,
+        customerRepositoryStub
+    }
+}
+
+describe('DbAddCustomer use case', () => {
+    const params: AddCustomer.Params = {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        cpf: 'any_cpf',
+        accessToken: 'any_token'
+    }
+
+    describe('HashService', () => {
+        test('should call hash method with correct password', async () => {
+            const { sut, hashServiceStub } = makeSut()
+            const hashServiceSpy = jest.spyOn(hashServiceStub, 'hash')
+            await sut.add(params)
+            expect(hashServiceSpy).toHaveBeenCalledWith({ value: params.password })
         });
     })
 });
