@@ -15,7 +15,7 @@ export namespace AddCustomerCompanyRepository {
         id: string
         name: string
         email: string
-        password: string
         cnpj: string
+        accessToken: string
     } | undefined
 }
