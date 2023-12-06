@@ -11,7 +11,8 @@ const makeCustomerRepositoryStub = (): AddCustomerRepository => {
                 name: 'any_name',
                 email: 'any_email@mail.com',
                 password: 'hashed_password',
-                cpf: 'any_cpf'
+                cpf: 'any_cpf',
+                accessToken: 'any_accessToken'
             }))
         }
     }
@@ -71,6 +72,22 @@ describe('DbAddCustomer use case', () => {
             jest.spyOn(hashServiceStub, 'hash').mockRejectedValue(new Error())
             const promise = sut.add(params)
             await expect(promise).rejects.toThrow()
+        });
+    })
+
+    describe('CustomerRepository', () => {
+        test('should call add method with correct values and password hashed', async () => {
+            const { sut, customerRepositoryStub } = makeSut()
+            const hashedPassword = 'hashed_password'
+            const customerRepositorySpy = jest.spyOn(customerRepositoryStub, 'add')
+            await sut.add(params)
+            expect(customerRepositorySpy).toHaveBeenCalledWith({
+                name: params.name,
+                email: params.email,
+                password: hashedPassword,
+                cpf: params.cpf,
+                accessToken: params.accessToken
+            })
         });
     })
 });
