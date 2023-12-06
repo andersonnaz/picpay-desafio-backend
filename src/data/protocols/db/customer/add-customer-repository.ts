@@ -17,5 +17,6 @@ export namespace AddCustomerRepository {
         email: string
         password: string
         cpf: string
+        accessToken: string
     } | undefined
 }
