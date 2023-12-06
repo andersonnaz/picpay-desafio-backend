@@ -12,7 +12,7 @@ export class DbAddCustomer implements AddCustomer{
     }
 
     async add(customerData: AddCustomer.Params): Promise<AddCustomer.Result> {
-        await this.hashService.hash({ value: customerData.password })
-        return new Promise(resolve => resolve(null))
+        const hashedPassword = await this.hashService.hash({ value: customerData.password })
+        return await this.customerRepository.add(Object.assign({}, customerData, { password: hashedPassword } ))
     }
 }
