@@ -1,6 +1,5 @@
 import { AddCustomer } from "../../domain/use-cases/add-customer";
 import { ConflictCustomerError } from "../errors/conflict-customer-error";
-import { ServerError } from "../errors/server-error";
 import { HttpRequest, HttpResponse, conflict, serverError } from "../helpers/http";
 import { Controller } from "../protocols/controller";
 
