@@ -37,11 +37,20 @@ const makeSut = (): SutTypes => {
 }
 
 describe('AddCustomer Controller', () => {
+    const fakeBodyHttpRequest = {
+        name: 'any_name',
+        email: 'any_email',
+        password: 'any_password',
+        cpf: 'any_cpf',
+        accessToken: 'any_token'
+    }
+
     const fakeHttpRequest: HttpRequest = {
         userId: 'any_id',
-        body: 'any_body',
+        body: fakeBodyHttpRequest,
         authorization: 'any_token'
     }
+
 
     test('should return 409 (conflit) if addCustomer returns undefined', async () => {
         const { sut, addCustomerStub } = makeSut()
@@ -55,6 +64,19 @@ describe('AddCustomer Controller', () => {
         jest.spyOn(addCustomerStub, 'add').mockRejectedValueOnce(new Error())
         const httpResponse = await sut.handle(fakeHttpRequest)
         expect(httpResponse).toEqual(serverError(new ServerError('any_stack')))
+    });
+
+    test('should call addCustomer with correct values', async () => {
+        const { sut, addCustomerStub } = makeSut()
+        const spyAddCustomer = jest.spyOn(addCustomerStub, 'add').mockRejectedValueOnce(new Error())
+        await sut.handle(fakeHttpRequest)
+        expect(spyAddCustomer).toHaveBeenCalledWith({
+            name: fakeHttpRequest.body.name,
+            email: fakeHttpRequest.body.email,
+            password: fakeHttpRequest.body.password,
+            cpf: fakeHttpRequest.body.cpf,
+            accessToken: fakeHttpRequest.body.accessToken
+        })
     });
 
 });
