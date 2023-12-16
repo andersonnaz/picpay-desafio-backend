@@ -1,7 +1,7 @@
 import { AddCustomerController } from "../../../../src/application/controllers/add-customer";
 import { ConflictCustomerError } from "../../../../src/application/errors/conflict-customer-error";
 import { ServerError } from "../../../../src/application/errors/server-error";
-import { HttpRequest, conflict, serverError } from "../../../../src/application/helpers/http";
+import { HttpRequest, conflict, create, serverError } from "../../../../src/application/helpers/http";
 import { AddCustomer } from "../../../../src/domain/use-cases/add-customer";
 
 const makeAddCustomer = (): AddCustomer => {
@@ -46,9 +46,7 @@ describe('AddCustomer Controller', () => {
     }
 
     const fakeHttpRequest: HttpRequest = {
-        userId: 'any_id',
-        body: fakeBodyHttpRequest,
-        authorization: 'any_token'
+        body: fakeBodyHttpRequest
     }
 
 
@@ -78,5 +76,17 @@ describe('AddCustomer Controller', () => {
             accessToken: fakeHttpRequest.body.accessToken
         })
     });
+
+    test('should return 201 (create) if a customer are created', async () => {
+        const { sut } = makeSut()
+        const httpResponse = await sut.handle(fakeHttpRequest)
+        expect(httpResponse).toEqual(create({
+            id: expect.any(String),
+            name: fakeHttpRequest.body.name,
+            email: fakeHttpRequest.body.email,
+            cpf: fakeHttpRequest.body.cpf,
+            accessToken: fakeHttpRequest.body.accessToken
+        }))
+    })
 
 });
