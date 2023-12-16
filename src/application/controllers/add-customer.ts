@@ -1,6 +1,7 @@
 import { AddCustomer } from "../../domain/use-cases/add-customer";
 import { ConflictCustomerError } from "../errors/conflict-customer-error";
-import { HttpRequest, HttpResponse, conflict } from "../helpers/http";
+import { ServerError } from "../errors/server-error";
+import { HttpRequest, HttpResponse, conflict, serverError } from "../helpers/http";
 import { Controller } from "../protocols/controller";
 
 export class AddCustomerController implements Controller {
@@ -24,7 +25,7 @@ export class AddCustomerController implements Controller {
                 return conflict(new ConflictCustomerError())
             }
         } catch (error) {
-
+            return serverError(error as Error)
         }
     }
 }
