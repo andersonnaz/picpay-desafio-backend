@@ -1,3 +1,5 @@
+import { ServerError } from "../errors/server-error"
+
 export interface HttpRequest {
     userId?: string
     body?: any
@@ -26,7 +28,7 @@ export const badRequest = (error: Error): HttpResponse => ({
 
 export const serverError = (error: Error): HttpResponse => ({
     statusCode: 500,
-    body: error
+    body: new ServerError(error.stack as string)
 })
 
 export const conflict = (error: Error): HttpResponse => ({
