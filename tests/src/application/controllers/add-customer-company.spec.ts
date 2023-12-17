@@ -1,6 +1,7 @@
 import { AddCustomerCompanyController } from "../../../../src/application/controllers/add-customer-company";
 import { ConflictCustomerError } from "../../../../src/application/errors/conflict-customer-error";
-import { HttpRequest, conflict } from "../../../../src/application/helpers/http";
+import { ServerError } from "../../../../src/application/errors/server-error";
+import { HttpRequest, conflict, serverError } from "../../../../src/application/helpers/http";
 import { AddCustomerCompany } from "../../../../src/domain/use-cases/add-customer-company";
 
 const makeAddCustomerCompany = (): AddCustomerCompany => {
@@ -47,10 +48,18 @@ describe('AddCustomerCompany Controller', () => {
     const fakeHttpRequest: HttpRequest = {
         body: fakeBodyHttpRequest
     }
+
     test('should return 409 (conflit) if addCustomerCompany returns undefined', async () => {
         const { sut, addCustomerCompanyStub } = makeSut()
         jest.spyOn(addCustomerCompanyStub, 'add').mockReturnValueOnce(undefined)
         const httpResponse = await sut.handle(fakeHttpRequest)
         expect(httpResponse).toEqual(conflict(new ConflictCustomerError()))
+    })
+
+    test('should return 500 (serverError) if AddCustomerCompany throws', async () => {
+        const { sut, addCustomerCompanyStub } = makeSut()
+        jest.spyOn(addCustomerCompanyStub, 'add').mockRejectedValueOnce(new Error())
+        const httpResponse = await sut.handle(fakeHttpRequest)
+        expect(httpResponse).toEqual(serverError(new ServerError('any_stack')))
     })
 });
