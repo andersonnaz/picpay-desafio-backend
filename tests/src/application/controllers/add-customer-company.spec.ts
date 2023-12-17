@@ -62,4 +62,18 @@ describe('AddCustomerCompany Controller', () => {
         const httpResponse = await sut.handle(fakeHttpRequest)
         expect(httpResponse).toEqual(serverError(new ServerError('any_stack')))
     })
+
+    test('should call addCustomerCompany with correct values', async () => {
+        const { sut, addCustomerCompanyStub } = makeSut()
+        const addCustomerCompanySpy = jest.spyOn(addCustomerCompanyStub, 'add')
+        await sut.handle(fakeHttpRequest)
+        expect(addCustomerCompanySpy).toHaveBeenCalledWith({
+            name: fakeHttpRequest.body.name,
+            email: fakeHttpRequest.body.email,
+            password: fakeHttpRequest.body.password,
+            cnpj: fakeHttpRequest.body.cnpj,
+            accessToken: fakeHttpRequest.body.accessToken
+
+        })
+    })
 });
